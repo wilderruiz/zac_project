@@ -1,72 +1,131 @@
 # ZAC — Zomniverse Agent for Code
 
-**Private developer-AI research presented through a public project overview.**
-
-ZAC explores a practical question: how can an AI coding assistant help investigate a software repository while keeping authority, permissions, and final decisions under human control?
-
-The project is an actively developed C#/.NET workspace for local, read-only code investigation. It combines AI-assisted reasoning with explicit operating boundaries, observable activity, cancellation, auditability, and automated verification.
+ZAC is a local-first coding agent focused on **controlled repository investigation**: using language models to help understand software while keeping execution authority, workspace boundaries, and final state under deterministic software control.
 
 > **The model proposes. The controller validates. Only the controller acts.**
 
-## Why ZAC exists
+This repository is the public technical overview for ZAC. The implementation remains private while the system is under active development.
 
-AI can accelerate software understanding, but useful developer tooling must do more than generate plausible text. It must respect the workspace, communicate what it is doing, fail safely, and preserve a clear boundary between a model's suggestions and actions performed by software.
+## Overview
 
-ZAC is being developed to examine that boundary in a real developer workspace. Its current focus is trustworthy repository investigation rather than unrestricted autonomy.
+Many coding assistants are optimized primarily for autonomy. ZAC explores a different design question:
 
-## Current capabilities
+**How can an AI coding system remain useful while making authority, permissions, execution, and observed state explicit?**
 
-The private development build currently demonstrates:
+The current system concentrates on read-only repository analysis. Model output is treated as a proposal rather than an instruction to the operating system. A controller mediates tool use, validates scope, records controller-confirmed activity, and keeps the workspace inside defined boundaries.
 
-- Local AI-assisted investigation of source repositories.
-- Read-only file discovery, inspection, and code search.
-- Structured, permission-bounded operations.
-- Workspace containment and explicit scope control.
-- Visible progress, cancellation, and recorded activity.
-- Browser-based interaction within a Windows-first developer workflow.
-- Automated testing of expected behavior and failure conditions.
-- Local inference support, allowing sensitive project material to remain within the developer-controlled environment.
+```mermaid
+flowchart LR
+    U[Developer] --> UI[ZAC interface]
+    UI --> C[Controller & policy boundary]
 
-ZAC does **not** currently present autonomous editing, unrestricted shell access, arbitrary network activity, or unsupervised Git mutation as available capabilities.
+    C --> M[Local language model]
+    M -->|Structured proposal| C
 
-## What the project demonstrates
+    C -->|Validated read-only action| T[Repository tools]
+    T --> W[(Scoped workspace)]
 
-ZAC is portfolio evidence of end-to-end engineering across:
+    C -->|Controller-confirmed events| UI
+```
 
-- C# and .NET 8 application development.
-- Local language-model integration.
-- Human-centered developer experience.
-- Security-conscious agentic software design.
-- Asynchronous and cancellable workflows.
-- Validation, observability, and audit-oriented behavior.
-- Windows tooling and browser-based product interfaces.
-- Automated regression and boundary testing.
+## Current scope
 
-The emphasis is not simply on connecting an application to a language model. It is on turning probabilistic model output into a controlled, understandable, and testable software experience.
+| Capability | Current status |
+|---|---|
+| Repository structure inspection | Available |
+| File reading | Available |
+| Code and text search | Available |
+| Structured, policy-bounded tool use | Available |
+| Workspace containment | Available |
+| Run cancellation and observable activity | Available |
+| Local model inference | Available |
+| Automated boundary and regression testing | Available |
+| Autonomous file modification | Not exposed |
+| Unrestricted shell or process execution | Not exposed |
+| Unsupervised Git mutation | Not exposed |
+| Arbitrary network access | Not exposed |
 
-## Who it is relevant to
+The absence of mutation capabilities is intentional at the current stage. Broader authority is treated as a separate security-design problem rather than a default extension of model access.
 
-ZAC may be of interest to:
+## Engineering focus
 
-- **Employers** looking for evidence of AI systems engineering, .NET development, security-minded implementation, and product ownership.
-- **Research and engineering partners** exploring private, local, or governed AI-assisted development workflows.
-- **Investors and product collaborators** interested in trustworthy developer tooling and human-controlled agentic systems.
-- **Organizations with sensitive codebases** evaluating ways to gain AI assistance without treating unrestricted autonomy as the default.
+ZAC combines agentic AI work with conventional software control mechanisms.
+
+| Area | Focus |
+|---|---|
+| **Control plane** | Separating model proposals from executable authority |
+| **Security** | Explicit permissions, bounded operations, and workspace containment |
+| **Local AI** | Developer-controlled inference for private code workflows |
+| **Reliability** | Cancellation, bounded execution, failure handling, and regression testing |
+| **Observability** | Controller-confirmed activity rather than model-reported claims |
+| **Developer experience** | A practical interface for repository investigation without hiding system state |
+
+## Technical profile
+
+ZAC is primarily developed in **C# / .NET 8** and integrates local language-model inference through an OpenAI-compatible local serving layer. The current interface is browser-based and the canonical development environment is Windows.
+
+The project includes work across:
+
+- agent/controller orchestration;
+- asynchronous and cancellable execution;
+- structured model/tool interaction;
+- filesystem boundary enforcement;
+- local LLM integration;
+- browser-based developer tooling;
+- observability and audit-oriented event flows;
+- automated unit, integration, boundary, and adversarial testing.
+
+## Design principles
+
+### Authority is explicit
+
+The language model does not receive direct operating-system authority. It proposes structured actions; deterministic software decides whether those actions are admissible.
+
+### Read-only means read-only
+
+The current tool surface is deliberately constrained to repository investigation. Write, shell, process, Git-mutation, and unrestricted-network capabilities are outside the active model authority.
+
+### Observed state comes from software
+
+The interface distinguishes model narrative from controller-confirmed events. A statement that an action occurred is not treated as proof that the action occurred.
+
+### Local operation matters
+
+Local inference is supported so private repository material can remain inside a developer-controlled environment rather than requiring code to be sent to a hosted model service.
+
+### Capability growth requires review
+
+New authority is not treated as a simple feature toggle. Mutation and broader execution capabilities require separate security design, validation, and review.
 
 ## Development status
 
-ZAC is in **active private development**. The present milestone concentrates on read-only repository understanding and dependable operating boundaries. Broader capabilities will only be considered when they can preserve explicit authorization, traceability, and human control.
+ZAC is in **active private development**.
 
-This repository is a public project facade. It intentionally does not contain ZAC's private source code, internal architecture, operational configuration, security controls, prompts, test fixtures, or deployment material.
+The current milestone is centered on making read-only repository investigation dependable: bounded execution, secure workspace access, event correlation, cancellation, local inference, and a usable interface. Work is also continuing on retrieval quality and answer quality during real repository analysis.
 
-## Collaboration
+The project is not presented as a finished autonomous coding platform. Its purpose at this stage is to build and test a controlled foundation before expanding authority.
 
-Conversations about engineering roles, research collaboration, product partnerships, responsible AI tooling, and potential investment are welcome.
+## Public repository scope
+
+This repository documents the project at a technical-product level without publishing the private implementation.
+
+It intentionally excludes:
+
+- private source code;
+- internal security implementation details;
+- operational configuration;
+- prompts and schemas;
+- private test fixtures;
+- deployment-specific material.
+
+That boundary allows the engineering direction, design principles, and project progress to remain visible without turning the public repository into a mirror of the private development codebase.
+
+## Project links
 
 - [CodBio Hub](https://home.codbiohub.com/)
-- [Wilder Ruiz on LinkedIn](https://www.linkedin.com/in/wilder-ruiz/)
 - [Wilder Ruiz on GitHub](https://github.com/wilderruiz)
+- [Wilder Ruiz on LinkedIn](https://www.linkedin.com/in/wilder-ruiz/)
 
 ---
 
-Copyright © Wilder Ruiz. All rights reserved. Public documentation in this repository does not grant access to, or a licence for, the private ZAC implementation.
+Copyright © Wilder Ruiz. All rights reserved. Public documentation in this repository does not grant a licence to the private ZAC implementation.
