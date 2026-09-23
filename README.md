@@ -1,305 +1,417 @@
 # ZAC — Zomniverse Agent for Code
 
-> **A local-first AI workspace for controlled software investigation and human-supervised document workflows.**
+> **A local-first AI workspace for controlled software investigation and human-supervised document editing.**
 
 [![Status](https://img.shields.io/badge/status-active%20private%20development-6f42c1)](#development-status)
 [![.NET](https://img.shields.io/badge/.NET-8-512BD4)](#technical-profile)
 [![Local AI](https://img.shields.io/badge/AI-local--first-0f766e)](#local-first-by-design)
 [![Platform](https://img.shields.io/badge/platform-Windows-0078D4)](#technical-profile)
-[![Authority](https://img.shields.io/badge/model%20authority-bounded-success)](#design-principles)
+[![Review](https://img.shields.io/badge/human%20review-first-0f766e)](#supervised-document-editing)
 
-**ZAC** explores a practical question at the intersection of AI agents, developer tooling, reliability and product design:
+**ZAC** is a private AI-software project exploring a simple product principle:
 
-> **How can an AI system be useful without making model output equivalent to authority?**
+> **Use the model where judgement helps. Use deterministic software where correctness matters. Keep the user in control.**
 
-The implementation is private while the system is under active development. This repository is a public product and engineering overview only.
-
----
-
-## The product idea
-
-ZAC treats the model as an **interpreter and reasoning component**, not as the operating system.
-
-The model can understand a request, propose what should happen and help structure intent. Deterministic software remains responsible for validating scope, enforcing boundaries, carrying out approved operations and reporting what actually happened.
-
-~~~mermaid
-flowchart LR
-    U[Developer] --> Q[Natural-language task]
-    Q --> Z[ZAC workspace]
-
-    Z --> L[Local AI reasoning]
-    L --> P[Structured proposal]
-
-    P --> V{Deterministic validation}
-    V -->|Allowed| A[Controlled action]
-    V -->|Needs review| H[Human decision]
-    V -->|Rejected| R[Safe failure]
-
-    A --> O[Observable result]
-    H --> O
-    O --> U
-~~~
-
-The core principle remains:
-
-> **The model proposes. Deterministic software validates. The user stays in control.**
+The implementation remains private. This repository shows the product capabilities, engineering direction and design thinking without publishing the internal architecture.
 
 ---
 
-## What ZAC can do today
+## What ZAC can do now
 
-| Product capability | Current state |
+ZAC has evolved from a read-only repository assistant into a broader local AI workspace.
+
+| Capability | Current state |
 |---|---:|
-| Understand and investigate a selected codebase | ✅ |
-| Read repository files and search code/text | ✅ |
-| Use a locally hosted language model | ✅ |
-| Show software-confirmed activity instead of relying on model claims | ✅ |
-| Bound long-running agent work and support cancellation | ✅ |
-| Attach local documents to a conversation | ✅ |
-| Rich DOCX preview inside the ZAC workspace | ✅ |
-| Download generated documents | ✅ |
-| Natural-language DOCX find/replace intent | ✅ |
-| Multi-change DOCX batches | ✅ |
-| Deterministic exact-match validation before document changes | ✅ |
-| Preserve the original DOCX while creating an updated version | ✅ |
-| Side-by-side chat + live document review | ✅ |
-| Step through changes one at a time | ✅ |
-| Edit FIND / REPLACE text during review | ✅ |
-| Apply a reviewed change to a temporary working version and immediately preview it | ✅ |
-| Stop review without publishing a final document | ✅ |
-| Explicit final creation of the updated DOCX | ✅ |
+| Investigate a selected repository | ✅ |
+| Read files and search code/text | ✅ |
+| Answer questions using local model inference | ✅ |
+| Show software-confirmed activity rather than model claims alone | ✅ |
+| Cancel bounded agent work | ✅ |
+| Attach local files to a conversation | ✅ |
+| Read DOCX content | ✅ |
+| Render a rich Word-like DOCX preview | ✅ |
+| Download attached/generated documents | ✅ |
+| Understand natural-language document edit requests | ✅ |
+| Accept explicit FIND / REPLACE batches | ✅ |
+| Preserve Word formatting while replacing text | ✅ |
+| Review document changes side-by-side with the chat | ✅ |
+| Edit FIND / REPLACE text before applying it | ✅ |
+| Apply one reviewed change and see the document update immediately | ✅ |
+| Step through many changes one by one | ✅ |
+| Stop review without publishing a final file | ✅ |
+| Preflight large edit batches before creating output | ✅ |
+| Diagnose missing, ambiguous, overlapping or dependent edits | ✅ |
+| Repair problematic edits without restarting the whole batch | ✅ |
+| Choose the exact occurrence when text appears multiple times | ✅ |
+| Handle batches of up to **64 requested edits** | ✅ |
+| Create a new final DOCX while preserving the original | ✅ |
 | Autonomous repository modification | **Not exposed** |
 | Unrestricted shell/process execution | **Not exposed** |
 | Unsupervised Git mutation | **Not exposed** |
 
-The goal is not maximum autonomy at any cost. The goal is **useful AI with visible authority boundaries**.
-
 ---
 
-## Human-supervised document editing
+# Two core workflows
 
-One of ZAC's current product experiments extends the same control philosophy beyond repository investigation.
+## 1. Repository investigation
 
-A user can attach a formatted Word document and ask naturally for one or many changes. ZAC interprets the request, validates the literal edits, and presents them in a side-by-side review workspace.
+ZAC can work as a local, bounded coding assistant for understanding an unfamiliar or evolving codebase.
 
 ~~~mermaid
-sequenceDiagram
-    participant U as User
-    participant Z as ZAC
-    participant M as Local model
-    participant D as Deterministic document engine
-    participant V as Live document view
-
-    U->>Z: Change this wording...
-    Z->>M: Extract literal edit intent
-    M-->>Z: FIND / REPLACE proposal
-    Z->>D: Validate against document
-    D-->>Z: Exact validated change
-    Z->>V: Show location in context
-    U->>Z: Review / edit / apply / continue
-    Z->>V: Refresh working preview
-    U->>Z: Create updated DOCX
-    Z-->>U: New document; source preserved
+flowchart LR
+    A[Ask a repository question] --> B[Local AI reasoning]
+    B --> C[Controlled investigation]
+    C --> D[Read / search selected workspace]
+    D --> E[Observed evidence]
+    E --> F[Answer]
 ~~~
 
-### Why this matters
+Typical uses include:
 
-For a two-page CV, a batch replacement can be inspected manually. For a long report, manuscript or structured document, that stops scaling.
-
-ZAC's review flow is designed around **progressive supervision**:
-
-| Step | User experience |
-|---|---|
-| **Interpret** | Natural language can be converted into literal edit intent |
-| **Validate** | The requested text must resolve deterministically |
-| **Locate** | ZAC brings the matching content into view |
-| **Review** | FIND and REPLACE are visible before application |
-| **Adjust** | The user can alter the proposed text without abandoning the session |
-| **Apply** | The working preview changes immediately |
-| **Continue** | Move through the remaining edits one at a time |
-| **Stop** | End the review session without publishing a final file |
-| **Create** | Explicitly generate the updated DOCX when satisfied |
-
-The original document remains the reference point; the workflow is built around review rather than silent rewriting.
+- locating where a feature is implemented;
+- tracing a behavior across files;
+- understanding a repository before making changes manually;
+- finding relevant configuration or tests;
+- investigating why a workflow behaves unexpectedly;
+- asking architecture or codebase questions without giving the model unrestricted machine authority.
 
 ---
 
-## Local-first by design
+## 2. Supervised document editing
 
-ZAC is designed for workflows where source code and working documents may be private.
+This has become one of ZAC's strongest practical workflows.
 
-The current system uses local model inference so repository and document workflows can remain developer-controlled.
+Attach a Word document and describe the changes naturally:
 
-~~~mermaid
-flowchart TB
-    subgraph Local[Developer-controlled local environment]
-        UI[ZAC workspace]
-        AI[Local language model]
-        DATA[(Selected code / attached documents)]
-        RULES[Deterministic controls]
-        UI <--> AI
-        UI <--> RULES
-        RULES <--> DATA
-    end
+> “Change this heading, replace this sentence, and update these three skill rows.”
 
-    USER[Developer] <--> UI
-~~~
-
-- local language-model inference;
-- explicit workspace scope;
-- source documents preserved during transformation workflows;
-- no assumption that model narration equals execution truth;
-- bounded operations and explicit completion;
-- private implementation and configuration remain outside this public repository.
-
----
-
-## Engineering focus
-
-ZAC brings together agent engineering and conventional software controls rather than treating them as competing approaches.
-
-| Area | What the project demonstrates |
-|---|---|
-| **Agent systems** | Structured model actions, multi-step reasoning and tool-using workflows |
-| **Evaluation & reliability** | Failure analysis, regression coverage, bounded execution and observable outcomes |
-| **Human-in-the-loop UX** | Approval, review, interruption and last-second editing before final output |
-| **Local AI** | Private-code workflows with developer-controlled model inference |
-| **Document intelligence** | Natural-language editing backed by deterministic matching and preserved formatting |
-| **Product systems** | Browser-based interaction, live state, asynchronous operations and reusable workflows |
-| **Security mindset** | Capability expansion is treated as a design decision, not a default permission |
-| **Developer experience** | Making system state visible instead of hiding agent behavior behind a chat box |
-
-The private codebase currently carries **480+ automated tests** spanning unit, integration, boundary, adversarial and UI-contract scenarios. The exact internal test suite and implementation details remain private.
-
----
-
-## Product thesis
-
-Many AI coding products frame progress primarily as **more autonomy**.
-
-ZAC is exploring a complementary direction.
-
-### Useful autonomy should be inspectable
-The user should be able to distinguish what the model suggested from what software actually validated and performed.
-
-### Deterministic systems still matter
-Language models are excellent at interpretation, reasoning and ambiguity. Exact matching, permission checks, document transformation and final state are often better owned by conventional software.
-
-### Human review can be a product feature
-Approval is not necessarily friction. In high-value workflows, the ability to inspect, edit, stop and continue can be the difference between an AI demo and software people trust.
-
-### Local AI enables different products
-Developer-controlled inference makes it practical to explore AI assistance around private repositories, unpublished research material and working documents without making hosted-model access a prerequisite.
-
-### Capability should grow deliberately
-ZAC starts from constrained authority and expands only when the surrounding validation, UX and testing are ready for it.
-
----
-
-## Current interaction model
+ZAC can turn that intent into a structured edit review while keeping the document visible beside the conversation.
 
 ~~~mermaid
 flowchart TD
-    A[Ask ZAC] --> B{What kind of task?}
+    A[Attach DOCX] --> B[Describe requested edits]
+    B --> C[Interpret literal edit intent]
+    C --> D[Deterministic preflight]
+    D --> E{Everything clean?}
 
-    B -->|Repository question| C[Investigate selected workspace]
-    C --> D[Return evidence-based answer]
+    E -->|Yes| F[Review changes]
+    E -->|No| G[Show every issue]
+    G --> H[Repair / choose occurrence / adjust text]
+    H --> F
 
-    B -->|Document edit| E[Interpret requested changes]
-    E --> F[Validate exact matches]
-    F --> G[Review changes side-by-side]
-    G --> H{User decision}
+    F --> I[Apply selected change]
+    I --> J[Live document preview updates]
+    J --> K{More changes?}
 
-    H -->|Edit| G
-    H -->|Continue| I[Apply to working preview]
-    I --> G
-    H -->|Stop| J[Leave without final export]
-    H -->|Create| K[Generate updated DOCX]
+    K -->|Yes| F
+    K -->|No| L[Create updated DOCX]
+    L --> M[Download new file]
 ~~~
 
-This interaction model is intentionally more explicit than a generic “AI changed your file” experience.
+### The review experience
+
+The document viewer sits beside the chat rather than covering it.
+
+You can:
+
+- see **Change 4 of 23**;
+- inspect the exact FIND text;
+- edit the replacement at the last second;
+- jump to the matching location in the document;
+- apply the change;
+- see the updated document immediately;
+- move to the next change;
+- go back;
+- stop review;
+- create the final file only when satisfied.
+
+The original document remains preserved.
 
 ---
 
-## Technical profile
+# Large-batch editing without blind trust
+
+A long document can contain dozens of requested edits. Traditional “all-or-nothing” replacement is fragile: one bad instruction can make it difficult to know what happened.
+
+ZAC now preflights the entire batch first.
+
+### Example
+
+A user supplies 38 edits to a CV, manuscript or report.
+
+Instead of stopping at the first problem, ZAC can present a full review picture:
+
+| Edit | Result | What the user can do |
+|---:|---|---|
+| 1 | Ready | Leave it for final creation |
+| 2 | Ready | Leave it |
+| 3 | Already applied | No action needed |
+| 4 | Missing | Correct the FIND text |
+| 5 | Ambiguous | Choose the intended occurrence |
+| 6 | Ready | Leave it |
+| 7 | Overlap / dependency | Review ordering or wording |
+| … | … | … |
+| 38 | Ready | Leave it |
+
+This makes the workflow useful for documents where checking every line manually would be tedious.
+
+~~~mermaid
+flowchart LR
+    B[Large edit batch] --> P[Preflight all changes]
+    P --> R[Ready changes]
+    P --> I[Issues requiring review]
+
+    I --> M[Missing text]
+    I --> A[Ambiguous text]
+    I --> O[Overlapping / dependent edits]
+
+    M --> FIX[Repair in review]
+    A --> PICK[Choose exact occurrence]
+    O --> FIX
+
+    FIX --> DONE[Resolved]
+    PICK --> DONE
+    R --> FINAL[Final creation]
+    DONE --> FINAL
+~~~
+
+---
+
+# Ambiguous text is reviewable, not a dead end
+
+If the same phrase appears several times, ZAC does not need to guess silently.
+
+The review can expose:
+
+**Previous occurrence · Occurrence 2 of 4 · Next occurrence**
+
+The document view moves to each candidate so the user can choose the intended one before applying the replacement.
+
+That turns ambiguity into an explicit user decision instead of an invisible model assumption.
+
+---
+
+# Natural language when useful, deterministic editing when necessary
+
+ZAC deliberately separates two jobs.
+
+| Job | Best suited to |
+|---|---|
+| Understand what the user means | Local language model |
+| Extract literal requested wording | Model / deterministic parsing |
+| Determine whether text actually matches | Deterministic software |
+| Decide which ambiguous occurrence is intended | Human |
+| Apply the approved replacement | Deterministic software |
+| Decide when the final document should exist | Human |
+
+For explicit FIND / REPLACE instructions, the model can be bypassed entirely.
+
+For conversational requests, the model helps translate the user's language into literal intent, while the actual document operation remains constrained and reviewable.
+
+---
+
+# Formatting preservation
+
+A useful document editor cannot destroy the document while changing its words.
+
+ZAC's current DOCX workflow is designed to preserve the surrounding Word document rather than rebuilding a document from extracted plain text.
+
+In live testing it has preserved:
+
+- multi-page CV layouts;
+- headings and typography;
+- colored section styles;
+- tables;
+- aligned role/date rows;
+- hyperlinks;
+- paragraph spacing;
+- structured skill sections;
+- surrounding formatting when replacement text changes.
+
+This makes the workflow practical for CV tailoring, structured reports, research material and other formatted Word documents.
+
+---
+
+# Product philosophy
+
+## The model is not the authority
+
+ZAC treats language-model output as interpretation or proposal, not proof that an action occurred.
+
+## Human review is not a failure mode
+
+For consequential document changes, review is part of the product.
+
+The user can inspect, correct, continue or stop without surrendering the entire workflow.
+
+## Deterministic software complements AI
+
+The interesting part of applied AI is often deciding **where not to use the model**.
+
+ZAC uses AI for ambiguity and language understanding while keeping exact validation, matching and controlled transformations in conventional software.
+
+## Local-first changes the trust model
+
+Local inference enables workflows around:
+
+- private repositories;
+- unpublished code;
+- CVs and professional documents;
+- research material;
+- internal drafts;
+- sensitive working files.
+
+## Capability expands deliberately
+
+More autonomy is not automatically better.
+
+New abilities are added only when the surrounding validation, UX and testing make them useful and inspectable.
+
+---
+
+# What this project demonstrates
+
+ZAC is also an engineering portfolio project showing work across several disciplines.
+
+| Area | Demonstrated work |
+|---|---|
+| **AI agent engineering** | Tool-using language models, structured actions, bounded multi-step behavior |
+| **Agent evaluation** | Live-model failure analysis, reproducible failures and regression-driven improvement |
+| **Human-AI interaction** | Review, interruption, editable proposals, visible state and explicit confirmation |
+| **Developer tooling** | Repository investigation and workflow-oriented product UX |
+| **Applied AI product design** | Combining model judgement with deterministic application logic |
+| **Document intelligence** | Natural-language editing, structured review and format-preserving DOCX transformation |
+| **Software engineering** | C#/.NET, asynchronous workflows, browser interfaces, state management and validation |
+| **Local AI systems** | Mistral-family local inference with llama.cpp/CUDA |
+| **Reliability engineering** | Bounded operations, failure handling and extensive automated regression coverage |
+
+The private project now has **close to 500 automated tests** across unit, integration, boundary, adversarial and UI-contract scenarios.
+
+---
+
+# Example product journeys
+
+### “Help me understand this repository”
+
+~~~text
+Ask ZAC
+→ local investigation
+→ visible activity
+→ evidence-based answer
+~~~
+
+### “Change one sentence in this CV”
+
+~~~text
+Attach DOCX
+→ ask naturally
+→ validate exact wording
+→ review
+→ apply
+→ preview
+→ create updated DOCX
+~~~
+
+### “Apply 40 changes to this report”
+
+~~~text
+Attach DOCX
+→ provide batch
+→ preflight all edits
+→ review only the problematic ones
+→ resolve ambiguity / missing text / dependencies
+→ inspect live results
+→ create final document
+~~~
+
+### “This phrase appears five times — change only the third one”
+
+~~~text
+Find phrase
+→ show occurrence 1 of 5
+→ navigate candidates
+→ choose occurrence 3
+→ apply
+→ verify visually
+~~~
+
+---
+
+# Technical profile
 
 | Layer | Public technical profile |
 |---|---|
 | **Primary implementation** | C# / .NET 8 |
-| **Model integration** | Local Mistral-family inference through an OpenAI-compatible serving layer |
-| **Acceleration** | llama.cpp / CUDA development environment |
-| **Interface** | Browser-based desktop workspace |
-| **Canonical platform** | Windows |
-| **Document processing** | Open XML / DOCX workflows |
+| **AI** | Local Mistral-family inference |
+| **Serving / acceleration** | llama.cpp / CUDA |
+| **Interface** | Browser-based Windows workspace |
+| **Document workflows** | DOCX / Open XML |
 | **Testing** | Unit, integration, boundary, adversarial and UI-contract testing |
-| **Development style** | AI-assisted development, rapid prototyping, live-model evaluation and regression-driven refinement |
+| **Development approach** | AI-assisted implementation, live-model evaluation and regression-driven refinement |
 
-This table intentionally describes the technology surface without publishing the private implementation architecture.
-
----
-
-## What the project demonstrates professionally
-
-For engineering teams, ZAC is evidence of work across:
-
-- **AI agent design** — tool-using models, structured actions, context design and controlled multi-step behavior;
-- **agent evaluation** — observing live-model failures, reproducing them and converting them into tests;
-- **software engineering** — C#/.NET, asynchronous workflows, state management, validation and browser interfaces;
-- **developer tooling** — repository investigation, review-oriented UX and local workflows;
-- **product thinking** — turning real workflow friction into focused features rather than adding autonomy for its own sake;
-- **human-AI interaction** — keeping users in the loop where correctness and intent matter;
-- **local AI infrastructure** — integrating local inference into a practical application rather than a standalone model demo.
+This intentionally describes the technology surface rather than the private implementation architecture.
 
 ---
 
-## Development status
+# Development status
 
 **ZAC is in active private development.**
 
-Current work has progressed from a read-only local coding-agent foundation into a broader supervised workspace that includes repository investigation, local document understanding and interactive document transformation.
+The project began as a constrained local coding agent and has evolved into a supervised AI workspace combining:
 
-The project is **not presented as a finished autonomous coding platform** and is **not currently published as an open-source implementation**.
+- repository investigation;
+- local model reasoning;
+- observable execution;
+- attachments;
+- document understanding;
+- format-preserving DOCX editing;
+- side-by-side live review;
+- large-batch preflight;
+- interactive repair;
+- deterministic occurrence selection.
 
-Near-term development continues to focus on:
+Current development continues to focus on:
 
-- real-world answer quality;
-- retrieval and context quality;
-- supervised editing UX;
-- document workflow reliability;
+- agent answer quality;
+- retrieval quality;
+- larger real-world document workflows;
+- editing UX;
 - live-model evaluation;
-- regression coverage;
+- reliability;
 - carefully reviewed capability expansion.
+
+ZAC is **not presented as a finished autonomous coding platform**, and the private implementation is not published as open source.
 
 ---
 
-## Public / private boundary
+# Public / private boundary
 
-This repository intentionally documents **what ZAC does and why the design matters** without publishing the private implementation.
+This repository intentionally shows **what the product can do** without exposing how the private implementation is assembled.
 
 ### Public here
 
+- user-facing capabilities;
 - product direction;
-- capability progress;
-- design principles;
-- high-level technology choices;
-- screenshots / demonstrations when appropriate;
-- non-sensitive engineering outcomes.
+- engineering principles;
+- selected technologies;
+- high-level workflows;
+- non-sensitive development progress.
 
 ### Kept private
 
 - source code;
-- internal architecture and composition;
-- security implementation details;
-- operational configuration;
+- internal architecture;
+- implementation composition;
+- security internals;
 - prompts and schemas;
+- operational configuration;
 - private test fixtures;
-- internal routes, storage details and deployment-specific material.
-
-That boundary makes the work visible to employers, collaborators and potential partners without turning the public overview into an implementation map.
+- internal endpoints and storage design;
+- deployment-specific material.
 
 ---
 
-## Project links
+# Project links
 
 - **CodBio Hub:** https://home.codbiohub.com/
 - **GitHub:** https://github.com/wilderruiz
